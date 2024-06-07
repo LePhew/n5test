@@ -1,0 +1,12 @@
+FROM node:slim
+ARG ENVIRONMENT_NAME=local
+ENV ENVIRONMENT_NAME=${ENVIRONMENT_NAME}
+
+WORKDIR app
+COPY . .
+
+RUN npm install
+
+CMD ["node", "main.js"]
+
+EXPOSE 80
