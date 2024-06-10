@@ -34,21 +34,8 @@ resource "aws_ecs_cluster" "cluster" {
 }
 
 resource "aws_ecs_task_definition" "app_task" {
-  family = "n5-task-definition" # Name your task
-  container_definitions = jsonencode([{
-    name      = "n5-task-definition"
-    image     = aws_ecr_repository.repo.repository_url
-    cpu       = 10
-    memory    = 512
-    essential = true
-    portMappings = [
-      {
-        containerPort = 80
-        hostPort      = 80
-      }
-    ]
-    }
-  ])
+  family                   = "n5-container" # Name your task
+  container_definitions    = file("../.aws/task-definition.json")
   requires_compatibilities = ["FARGATE"] # use Fargate as the launch type
   network_mode             = "awsvpc"    # add the AWS VPN network mode as this is required for Fargate
   memory                   = 512         # Specify the memory the container requires
