@@ -150,7 +150,7 @@ data "azurerm_dns_zone" "phewtools" {
   name                = "phewtools.com"
   resource_group_name = "PHEW-RG"
 }
-resource "azurerm_dns_record" "app_dns" {
+resource "azurerm_dns_cname_record" "app_dns" {
   name                = "n5test"
   zone_name           = data.azurerm_dns_zone.phewtools.name
   resource_group_name = data.azurerm_dns_zone.phewtools.resource_group_name
