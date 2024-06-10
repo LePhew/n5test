@@ -10,6 +10,10 @@ provider "aws" {
   region = "us-east-1"
 }
 
+provider "azurerm" {
+  features {}
+}
+
 data "aws_iam_policy_document" "assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -141,6 +145,19 @@ resource "aws_security_group" "service_security_group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+data "azurerm_dns_zone" "phewtools" {
+  name                = "phewtools.com"
+  resource_group_name = "PHEW-RG"
+}
+resource "azurerm_dns_record" "app_dns" {
+  name                = "n5test"
+  zone_name           = data.azurerm_dns_zone.phewtools.name
+  resource_group_name = data.azurerm_dns_zone.phewtools.resource_group_name
+  ttl                 = 300
+  record              = aws_alb.application_load_balancer.dns_name
+}
+
 output "app_url" {
   value = aws_alb.application_load_balancer.dns_name
 }
