@@ -85,7 +85,7 @@ jobs:
     - name: Setting terraform outputs
       id: tf_output
       run: |
-        OUTPUT=$(terraform output app_url -raw)
+        OUTPUT=$(terraform output -raw app_url)
         echo "app_url=$OUTPUT" >> $GITHUB_OUTPUT
       working-directory: ./terraform
 
