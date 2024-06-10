@@ -1,3 +1,11 @@
+terraform {
+  backend "s3" {
+    bucket = "n5testbucket2024"
+    region = "us-east-1"
+    key    = "n5state.tfstate"
+  }
+}
+
 provider "aws" {
   region = "us-east-1"
 }
@@ -26,7 +34,8 @@ resource "aws_default_subnet" "default_subnet_b" {
 }
 
 resource "aws_ecr_repository" "repo" {
-  name = "n5-repo"
+  name         = "n5-repo"
+  force_delete = true
 }
 
 resource "aws_ecs_cluster" "cluster" {
@@ -63,8 +72,7 @@ resource "aws_alb" "application_load_balancer" {
   # security group
   security_groups = [aws_security_group.load_balancer_security_group.id]
 }
-# main.tf
-# Create a security group for the load balancer:
+
 resource "aws_security_group" "load_balancer_security_group" {
   ingress {
     from_port   = 80
