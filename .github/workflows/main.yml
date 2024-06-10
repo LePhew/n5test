@@ -64,6 +64,31 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Terraform init
+      run: |
+        terraform init
+      working-directory: ./terraform
+
+    - name: Terraform plan
+      run: |
+        terraform plan -out plan.tfplan
+      working-directory: ./terraform
+
+    - name: Terraform apply
+      run: |
+        terraform apply "plan.tfplan"
+      working-directory: ./terraform
+
+    - name: Setting terraform outputs
+      id: tf_output
+      run: |
+        OUTPUT=$(terraform output app_url -raw)
+        echo "app_url=$OUTPUT" >> $GITHUB_OUTPUT
+      working-directory: ./terraform
+
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
@@ -77,27 +102,6 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg ENVIRONMENT_NAME=$ENVIRONMENT_NAME .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-
-    - name: Terraform init
-      run: |
-        terraform init
-
-    - name: Terraform plan
-      run: |
-        terraform plan -out plan.tfplan
-
-    - name: Terraform apply
-      run: |
-        terraform apply "plan.tfplan"
-
-    - name: Setting terraform outputs
-      id: tf_output
-      run: |
-        OUTPUT=$(terraform output app_url -raw)
-        echo "app_url=$OUTPUT" >> $GITHUB_OUTPUT
 
     - name: Download task definition
       run: |
